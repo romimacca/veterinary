@@ -36,5 +36,6 @@
   </tbody>
 </table>
 
-<%= link_to 'Edit', edit_pet_path(@pet) %> |
-<%= link_to 'Back', pets_path %>
+<%= link_to 'Back', client_pets_path(@client) %> |
+<%= link_to 'New Pet History', new_pet_history_path %> |  
+<%= link_to 'Edit', edit_client_pet_path(@client, @pet) %> 

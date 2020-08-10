@@ -4,35 +4,41 @@ class PetsController < ApplicationController
   # GET /pets
   # GET /pets.json
   def index
-    @pets = Pet.all
+    @client = Client.find(params[:client_id])
+    @pets = @client.pets
   end
 
   # GET /pets/1
   # GET /pets/1.json
   def show
+    @client = Client.find(params[:client_id])
+    @pet = Pet.find(params[:id])
   end
 
   # GET /pets/new
   def new
+    @client = Client.find(params[:client_id])
     @pet = Pet.new
   end
 
   # GET /pets/1/edit
   def edit
+    @client = Client.find(params[:client_id])
+    @pet = Pet.find(params[:id])
   end
 
   # POST /pets
   # POST /pets.json
   def create
+    @client = Client.find (params[:client_id])
     @pet = Pet.new(pet_params)
+    @pet.client = @client
 
     respond_to do |format|
       if @pet.save
-        format.html { redirect_to @pet, notice: 'Pet was successfully created.' }
-        format.json { render :show, status: :created, location: @pet }
+        format.html { redirect_to client_pet_path(@client, @pet), notice: 'Pet was successfully created.' }
       else
         format.html { render :new }
-        format.json { render json: @pet.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -40,9 +46,12 @@ class PetsController < ApplicationController
   # PATCH/PUT /pets/1
   # PATCH/PUT /pets/1.json
   def update
+    @client = Client.find(params[:client_id])
+    @pet = Pet.find(params[:id])
+
     respond_to do |format|
-      if @pet.update(pet_params)
-        format.html { redirect_to @pet, notice: 'Pet was successfully updated.' }
+      if @pet.update(pet_params.merge(client: @client))
+        format.html { redirect_to client_pet_path(@client, @pet), notice: 'Pet was successfully updated.' }
         format.json { render :show, status: :ok, location: @pet }
       else
         format.html { render :edit }
@@ -54,9 +63,10 @@ class PetsController < ApplicationController
   # DELETE /pets/1
   # DELETE /pets/1.json
   def destroy
+    @pet = Pet.find(params[:id])
     @pet.destroy
     respond_to do |format|
-      format.html { redirect_to pets_url, notice: 'Pet was successfully destroyed.' }
+      format.html { redirect_to client_pets_url, notice: 'Pet was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
@@ -69,6 +79,6 @@ class PetsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def pet_params
-      params.require(:pet).permit(:name, :race, :birthdate)
+      params.require(:pet).permit(:name, :race, :birthdate, :client)
     end
 end
